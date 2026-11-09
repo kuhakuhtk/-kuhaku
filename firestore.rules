@@ -14,7 +14,7 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     function isOwner() {
-      return request.auth != null && request.auth.uid == "OWNER_UID";
+      return request.auth != null && request.auth.uid == "OFskOBSHHVX4JUi3AhZCoG93jl12";
     }
     function isSelf(chatId) {
       return request.auth != null && request.auth.uid == chatId;

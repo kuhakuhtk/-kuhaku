@@ -12,7 +12,7 @@ export const firebaseConfig = {
 
 // 내(주인) Firebase 사용자 ID.
 // admin.html 에서 Google로 로그인하면 화면에 나오는 값을 여기와 firestore.rules 에 넣어요.
-export const OWNER_UID = "";
+export const OWNER_UID = "OFskOBSHHVX4JUi3AhZCoG93jl12";
 
 // 사용하는 Firebase 라이브러리 버전 (chat.js, admin.js 에서 같이 씀)
 export const SDK = "https://www.gstatic.com/firebasejs/10.12.2";
