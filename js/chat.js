@@ -53,6 +53,7 @@ function scrollDown() { body.scrollTop = body.scrollHeight; }
 // ----- 닉네임 단계 ↔ 대화 단계 -----
 function showJoin() {
   me.hidden = true;
+  document.getElementById("endConfirm").hidden = true;
   form.hidden = true;
   joinForm.hidden = false;
   joinInput.value = nickname;
@@ -61,6 +62,7 @@ function showJoin() {
 }
 function showChat() {
   joinForm.hidden = true;
+  document.getElementById("endConfirm").hidden = true;
   form.hidden = false;
   me.hidden = false;
   meText.textContent = window.t("chatAs").replace("{name}", nickname);
@@ -92,25 +94,61 @@ joinForm.addEventListener("submit", async function (e) {
   }
 });
 
+// ----- 대화 끝내기 (공용 컴퓨터용) -----
+// 이 브라우저의 익명 로그인을 지워서, 다음 사람이 이전 대화를 볼 수 없게 해요.
+// 보낸 메시지는 지워지지 않고 주인 메시지함에 남아요.
+const endConfirm = document.getElementById("endConfirm");
+document.getElementById("chatEnd").addEventListener("click", function () {
+  me.hidden = true;
+  endConfirm.hidden = false;
+});
+document.getElementById("endNo").addEventListener("click", function () {
+  endConfirm.hidden = true;
+  me.hidden = false;
+});
+document.getElementById("endYes").addEventListener("click", async function () {
+  endConfirm.hidden = true;
+  if (!fb || !sdk) return;
+  fb.stop();               // 실시간 구독 멈추기
+  fb = null;
+  nickname = "";
+  try { localStorage.removeItem("nick"); } catch (e) {}
+  list.textContent = "";   // 화면의 말풍선 지우기
+  input.value = "";
+  input.disabled = true;
+  sendBtn.disabled = true;
+  try {
+    await sdk.A.signOut(sdk.auth);
+    await connect();       // 새 익명 ID로 다시 연결 → 닉네임부터 새로 시작
+    setNote("ended");
+  } catch (err) {
+    console.error(err);
+    setNote("chatError");
+  }
+});
+
 // ----- Firebase 연결 -----
+let sdk = null;   // Firebase 라이브러리 (한 번만 불러와요)
+
 async function connect() {
   if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
     setNote("chatNotReady");
     return;
   }
   try {
-    const { initializeApp } = await import(SDK + "/firebase-app.js");
-    const { getAuth, signInAnonymously } = await import(SDK + "/firebase-auth.js");
-    const fs = await import(SDK + "/firebase-firestore.js");
+    if (!sdk) {
+      const { initializeApp } = await import(SDK + "/firebase-app.js");
+      const A = await import(SDK + "/firebase-auth.js");
+      const fs = await import(SDK + "/firebase-firestore.js");
+      const app = initializeApp(firebaseConfig);
+      sdk = { A, fs, auth: A.getAuth(app), db: fs.getFirestore(app) };
+    }
+    const { A, fs, auth, db } = sdk;
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     // 익명 로그인: 같은 브라우저로 다시 오면 같은 ID가 유지돼서 대화가 이어져요.
     await auth.authStateReady();   // 전에 로그인한 기록이 있으면 먼저 불러와요
-    const user = auth.currentUser || (await signInAnonymously(auth)).user;
+    const user = auth.currentUser || (await A.signInAnonymously(auth)).user;
     const uid = user.uid;
-    const db = fs.getFirestore(app);
-    fb = { db, uid, fs };
 
     // 내 대화방 메시지를 시간 순서대로 실시간 구독
     const q = fs.query(
@@ -118,11 +156,12 @@ async function connect() {
       fs.orderBy("createdAt", "asc"),
       fs.limitToLast(200)
     );
-    fs.onSnapshot(q, function (snap) {
+    const stop = fs.onSnapshot(q, function (snap) {
       render(snap.docs.map(function (d) { return d.data(); }));
     }, function () {
       setNote("chatError");
     });
+    fb = { db, uid, fs, stop };
 
     // 전에 정한 닉네임이 있으면 바로 대화, 없으면 닉네임부터
     const mine = await fs.getDoc(fs.doc(db, "chats", uid));

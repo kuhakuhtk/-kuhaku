@@ -114,10 +114,17 @@
   <div class="chat-body" id="chatBody" aria-live="polite">
     <p class="msg bot" data-i18n="chatHello1">안녕하세요! kuhaku예요.</p>
     <p class="msg bot" data-i18n="chatHello2">메시지를 남겨 주세요. 제가 확인하고 여기로 답장할게요!</p>
+    <p class="chat-warn" data-i18n="privacy">개인정보(실명, 학교, 주소, 전화번호)는 보내지 마세요.</p>
     <p class="chat-note" id="chatNote" data-i18n="chatConnecting">연결하는 중…</p>
     <p class="chat-note" id="chatMe" hidden>
       <span id="chatMeText"></span> ·
-      <button type="button" class="link-btn" id="chatRename" data-i18n="rename">바꾸기</button>
+      <button type="button" class="link-btn" id="chatRename" data-i18n="rename">바꾸기</button> ·
+      <button type="button" class="link-btn" id="chatEnd" data-i18n="endChat">대화 끝내기</button>
+    </p>
+    <p class="chat-note" id="endConfirm" hidden>
+      <span data-i18n="endAsk">이 기기에서 대화가 사라지고 새로 시작해요. 보낸 메시지는 kuhaku에게 남아요.</span><br>
+      <button type="button" class="link-btn" id="endYes" data-i18n="endYes">끝내기</button> ·
+      <button type="button" class="link-btn" id="endNo" data-i18n="endNo">취소</button>
     </p>
     <div id="chatList" style="display:contents"></div>
   </div>

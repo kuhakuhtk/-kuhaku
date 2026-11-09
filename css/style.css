@@ -421,6 +421,17 @@
     margin: 2px 0;
   }
   .msg.pending { opacity: 0.6; }
+  /* 개인정보 안내 (노란 메모지 느낌) */
+  .chat-warn {
+    margin: 2px 0;
+    padding: 6px 12px;
+    background: var(--lemon);
+    color: #3a2840;
+    border: 2px dashed #3a2840;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    text-align: center;
+  }
   .link-btn {
     background: none;
     border: none;

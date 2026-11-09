@@ -30,7 +30,13 @@ const texts = {
     joinPlaceholder: "닉네임 (최대 20자)",
     joinBtn: "시작하기",
     chatAs: "{name} 님으로 대화 중",
-    rename: "바꾸기"
+    rename: "바꾸기",
+    privacy: "개인정보(실명, 학교, 주소, 전화번호)는 보내지 마세요.",
+    endChat: "대화 끝내기",
+    endAsk: "이 기기에서 대화가 사라지고 새로 시작해요. 보낸 메시지는 kuhaku에게 남아요.",
+    endYes: "끝내기",
+    endNo: "취소",
+    ended: "대화를 끝냈어요. 새로 시작하려면 닉네임을 정해 주세요."
   },
   en: {
     kana: "空白 · filling in the blanks, one by one",
@@ -61,7 +67,13 @@ const texts = {
     joinPlaceholder: "Nickname (up to 20 characters)",
     joinBtn: "Start",
     chatAs: "Chatting as {name}",
-    rename: "Change"
+    rename: "Change",
+    privacy: "Please don't send personal info (real name, school, address, phone number).",
+    endChat: "End chat",
+    endAsk: "This clears the chat from this device so you can start fresh. Messages you sent stay with kuhaku.",
+    endYes: "End",
+    endNo: "Cancel",
+    ended: "Chat ended. Pick a nickname to start a new one."
   },
   vi: {
     kana: "空白 · lấp đầy từng khoảng trống một",
@@ -92,7 +104,13 @@ const texts = {
     joinPlaceholder: "Biệt danh (tối đa 20 ký tự)",
     joinBtn: "Bắt đầu",
     chatAs: "Đang trò chuyện với tên {name}",
-    rename: "Đổi"
+    rename: "Đổi",
+    privacy: "Đừng gửi thông tin cá nhân (tên thật, trường, địa chỉ, số điện thoại) nhé.",
+    endChat: "Kết thúc",
+    endAsk: "Cuộc trò chuyện sẽ bị xóa khỏi thiết bị này để bắt đầu lại. Tin nhắn bạn đã gửi vẫn được lưu ở chỗ kuhaku.",
+    endYes: "Kết thúc",
+    endNo: "Hủy",
+    ended: "Đã kết thúc. Hãy chọn biệt danh để bắt đầu cuộc trò chuyện mới."
   }
 };
 
