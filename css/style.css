@@ -485,6 +485,7 @@
     cursor: pointer;
   }
   .pill-btn.ghost { background: var(--card); color: var(--ink); }
+  .admin > .pill-btn { align-self: flex-start; }
   .pill-btn:focus-visible { outline: 3px dashed var(--ink); outline-offset: 3px; }
 
   .inbox {
