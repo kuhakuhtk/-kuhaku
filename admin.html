@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>kuhaku 메시지함</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&family=Baloo+2:wght@600&family=Nunito:wght@500;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main class="admin">
+  <h1>kuhaku 메시지함</h1>
+
+  <!-- 로그인 전 / 설정 안내 -->
+  <section class="panel" id="gate">
+    <p id="gateText">불러오는 중…</p>
+    <div id="uidBox" hidden>
+      <p>내 사용자 ID (복사해서 <code>js/firebase-config.js</code> 의 <code>OWNER_UID</code> 와 <code>firestore.rules</code> 에 넣어요):</p>
+      <p class="uid" id="uid"></p>
+    </div>
+    <button class="pill-btn" id="loginBtn" type="button" hidden>Google로 로그인</button>
+  </section>
+
+  <!-- 주인 전용 메시지함 -->
+  <section class="inbox" id="inbox" hidden>
+    <div class="panel">
+      <p class="muted" id="threadCount">대화 0개</p>
+      <ul class="threads" id="threads"></ul>
+    </div>
+    <div class="panel">
+      <p class="muted" id="threadTitle">왼쪽에서 대화를 골라 주세요.</p>
+      <div class="chat-body" id="adminBody"></div>
+      <form class="chat-form" id="replyForm" autocomplete="off">
+        <input id="replyInput" type="text" maxlength="500" placeholder="답장 입력…" aria-label="답장" disabled>
+        <button type="submit" id="replyBtn" disabled>보내기</button>
+      </form>
+    </div>
+  </section>
+
+  <button class="pill-btn ghost" id="logoutBtn" type="button" hidden>로그아웃</button>
+</main>
+
+<script type="module" src="js/admin.js"></script>
+</body>
+</html>

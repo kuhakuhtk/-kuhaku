@@ -1,0 +1,49 @@
+rules_version = '2';
+
+// ===== Firestore 보안 규칙 =====
+// Firebase 콘솔 → Firestore Database → 규칙(Rules) 탭에 이 내용을 통째로 붙여 넣고 "게시"를 눌러요.
+// 아래 OWNER_UID 자리를 admin.html 에서 확인한 내 사용자 ID로 바꿔야 해요.
+//
+// 규칙 요약
+// - 방문자는 자기 대화방(chats/자기ID)만 읽고 쓸 수 있어요. 다른 사람 대화는 못 봐요.
+// - 주인(OWNER_UID)은 모든 대화방을 읽고 답장할 수 있어요.
+// - 메시지는 1~500자 글자만, 한 번 보낸 메시지는 고칠 수 없어요.
+// - 닉네임은 1~20자예요.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOwner() {
+      return request.auth != null && request.auth.uid == "OWNER_UID";
+    }
+    function isSelf(chatId) {
+      return request.auth != null && request.auth.uid == chatId;
+    }
+
+    match /chats/{chatId} {
+      allow read: if isOwner() || isSelf(chatId);
+      allow create, update: if (isOwner() || isSelf(chatId))
+        && request.resource.data.keys().hasOnly(['nickname', 'updatedAt', 'lastText', 'lastFrom', 'unreadByOwner', 'lang'])
+        && (!('lastText' in request.resource.data)
+            || (request.resource.data.lastText is string && request.resource.data.lastText.size() <= 500))
+        && (!('nickname' in request.resource.data)
+            || (request.resource.data.nickname is string
+                && request.resource.data.nickname.size() > 0
+                && request.resource.data.nickname.size() <= 20));
+      allow delete: if isOwner();
+
+      match /messages/{messageId} {
+        allow read: if isOwner() || isSelf(chatId);
+        allow create: if request.resource.data.keys().hasOnly(['from', 'text', 'createdAt'])
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0
+          && request.resource.data.text.size() <= 500
+          && request.resource.data.createdAt == request.time
+          && ((isSelf(chatId) && request.resource.data.from == 'visitor')
+              || (isOwner() && request.resource.data.from == 'owner'));
+        allow update: if false;
+        allow delete: if isOwner();
+      }
+    }
+  }
+}

@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>kuhaku 링크 모음</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&family=Baloo+2:wght@600&family=Nunito:wght@500;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<main class="wrap">
+
+  <!-- 0. 언어 선택 버튼 -->
+  <div class="lang" role="group" aria-label="Language">
+    <button type="button" data-lang="ko" aria-pressed="true">한국어</button>
+    <button type="button" data-lang="en" aria-pressed="false">English</button>
+    <button type="button" data-lang="vi" aria-pressed="false">Tiếng Việt</button>
+  </div>
+
+  <!-- 1. 프로필 카드
+       data-i18n="이름표" 가 붙은 글자는 아래 script의 번역표(texts)에서 바뀌어요. -->
+  <section class="profile">
+    <div class="face" aria-hidden="true">
+      <span class="eye l"></span><span class="eye r"></span>
+      <span class="cheek l"></span><span class="cheek r"></span>
+      <span class="mouth"></span>
+    </div>
+    <h1>kuhaku</h1>
+    <p class="kana" data-i18n="kana">空白 · 빈칸에 하나씩 채워 가는 중</p>
+    <p class="bio" data-i18n="bio">게임이랑 노는 걸 제일 좋아하는 학생이에요. 같이 게임할 사람 언제든 환영!</p>
+  </section>
+
+  <!-- 2. 취미 스티커 -->
+  <ul class="tags">
+    <li data-i18n="tag1">게임</li>
+    <li data-i18n="tag2">음악 듣기</li>
+    <li data-i18n="tag3">그림 그리기</li>
+    <li data-i18n="tag4">애니 보기</li>
+    <li data-i18n="tag5">산책</li>
+  </ul>
+
+  <!-- 3. 링크 버튼들
+       href="#" 인 버튼은 아직 주소가 없는 예시예요. 진짜 주소로 바꾸면 돼요. -->
+  <p class="label" data-i18n="label">여기로 놀러 오세요</p>
+  <nav class="links">
+
+    <a class="btn lemon" href="#" data-todo>
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M7 8h10a4 4 0 0 1 4 4v1a3 3 0 0 1-5.4 1.8L14.5 14h-5l-1.1 0.8A3 3 0 0 1 3 13v-1a4 4 0 0 1 4-4z"/><path d="M8 10.5v3M6.5 12h3"/><circle cx="15.5" cy="11" r="0.6"/><circle cx="17.5" cy="13" r="0.6"/></svg>
+      </span>
+      <span class="text"><strong data-i18n="game">게임 프로필</strong><span data-i18n="gameDesc">같이 게임해요 (디스코드 / 스팀)</span></span>
+      <span class="badge" data-i18n="example">예시</span>
+    </a>
+
+    <a class="btn sky" href="#" data-todo>
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6"/></svg>
+      </span>
+      <span class="text"><strong>Instagram</strong><span data-i18n="instaDesc">일상 사진</span></span>
+      <span class="badge" data-i18n="example">예시</span>
+    </a>
+
+    <a class="btn lilac" href="#" data-todo>
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="4"/><path d="M10 9.5v5l4.5-2.5z"/></svg>
+      </span>
+      <span class="text"><strong>YouTube</strong><span data-i18n="ytDesc">게임 플레이 영상</span></span>
+      <span class="badge" data-i18n="example">예시</span>
+    </a>
+
+    <a class="btn mint" href="#" data-todo>
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.4 2.6 2.2 4.4 5 4.6"/></svg>
+      </span>
+      <span class="text"><strong>TikTok</strong><span data-i18n="tiktokDesc">짧은 영상</span></span>
+      <span class="badge" data-i18n="example">예시</span>
+    </a>
+
+    <a class="btn pink" href="#" data-todo>
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M15.5 8h-1.8A1.7 1.7 0 0 0 12 9.7V21M9.5 13h5"/></svg>
+      </span>
+      <span class="text"><strong>Facebook</strong><span data-i18n="fbDesc">친구하고 소식 나눠요</span></span>
+      <span class="badge" data-i18n="example">예시</span>
+    </a>
+
+  </nav>
+
+  <footer>© 2026 kuhaku</footer>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- 4. 대화창
+     방문자가 보낸 메시지는 Firebase에 저장되고, 나는 admin.html 에서 읽고 답장해요. -->
+<button class="chat-fab" id="chatFab" type="button" aria-expanded="false" aria-controls="chat">
+  <span class="mini" aria-hidden="true"></span>
+  <span data-i18n="chatFab">대화하기</span>
+</button>
+
+<section class="chat" id="chat" hidden aria-labelledby="chatName">
+  <header class="chat-head">
+    <span class="mini" aria-hidden="true"></span>
+    <div class="who">
+      <strong id="chatName">kuhaku</strong>
+      <span><i class="dot" aria-hidden="true"></i><span data-i18n="chatStatus">보통 하루 안에 답장해요</span></span>
+    </div>
+    <button class="chat-close" id="chatClose" type="button" data-i18n-aria="chatClose" aria-label="닫기">✕</button>
+  </header>
+
+  <div class="chat-body" id="chatBody" aria-live="polite">
+    <p class="msg bot" data-i18n="chatHello1">안녕하세요! kuhaku예요.</p>
+    <p class="msg bot" data-i18n="chatHello2">메시지를 남겨 주세요. 제가 확인하고 여기로 답장할게요!</p>
+    <p class="chat-note" id="chatNote" data-i18n="chatConnecting">연결하는 중…</p>
+    <p class="chat-note" id="chatMe" hidden>
+      <span id="chatMeText"></span> ·
+      <button type="button" class="link-btn" id="chatRename" data-i18n="rename">바꾸기</button>
+    </p>
+    <div id="chatList" style="display:contents"></div>
+  </div>
+
+  <!-- 닉네임 정하기 (처음 한 번, 로그인처럼) -->
+  <form class="chat-form" id="joinForm" autocomplete="off" hidden>
+    <input id="joinInput" type="text" maxlength="20" data-i18n-ph="joinPlaceholder" placeholder="닉네임 (최대 20자)" aria-label="닉네임">
+    <button type="submit" data-i18n="joinBtn">시작하기</button>
+  </form>
+
+  <!-- 메시지 보내기 -->
+  <form class="chat-form" id="chatForm" autocomplete="off">
+    <input id="chatInput" type="text" maxlength="500" data-i18n-ph="chatPlaceholder" placeholder="메시지 입력…" aria-label="메시지" disabled>
+    <button type="submit" id="chatSend" data-i18n="chatSend" disabled>보내기</button>
+  </form>
+</section>
+
+<!-- 번역과 버튼 동작 (일반 스크립트) -->
+<script src="js/i18n.js"></script>
+<!-- 실시간 채팅 (Firebase) -->
+<script type="module" src="js/chat.js"></script>
+</body>
+</html>
