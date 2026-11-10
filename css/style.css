@@ -1,45 +1,31 @@
   /* 레이아웃: 가운데 좁은 한 줄. 언어 선택 → 프로필 카드 → 취미 스티커 → 링크 버튼 목록 */
+  /* 밤하늘 테마: 기기가 밝은 모드여도 항상 밤하늘이에요 */
   :root {
-    --bg: #fff6fb;          /* 배경: 아주 연한 분홍 */
-    --dot: #ffd9ec;         /* 배경 점무늬 */
-    --ink: #4a3550;         /* 글자색 */
-    --soft: #8a7391;        /* 흐린 글자 */
-    --card: #ffffff;        /* 카드 바탕 */
-    --line: #4a3550;        /* 테두리 */
-    --pink: #ffb3d1;
-    --mint: #b8f0dc;
-    --sky: #bfe3ff;
-    --lemon: #fff1a8;
-    --lilac: #dcccff;
+    --bg: #12173a;          /* 배경: 깊은 남색 밤하늘 */
+    --dot: #2a3163;         /* 메시지함 점무늬 */
+    --ink: #f1edff;         /* 글자색: 별빛 흰색 */
+    --soft: #aeaad6;        /* 흐린 글자 */
+    --card: #222a55;        /* 카드 바탕: 밤하늘보다 살짝 밝은 남색 */
+    --line: #070a1f;        /* 테두리와 그림자 */
+    --pink: #f7a8c8;        /* 파스텔 버튼들 (위에 진한 글자가 잘 보이게 밝게) */
+    --mint: #9fe3c9;
+    --sky: #a9d2f5;
+    --lemon: #f6e08a;
+    --lilac: #c3b0f5;
     --font-display: "Jua", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
     --font-body: "Gowun Dodum", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    color-scheme: dark;
   }
   /* 베트남어는 성조 기호(ă, ơ, ư, ạ…)가 잘 나오는 글꼴로 바꿔요 */
   :root:lang(vi) {
     --font-display: "Baloo 2", "Segoe UI", sans-serif;
     --font-body: "Nunito", "Segoe UI", sans-serif;
   }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #2a2233; --dot: #3a2f47; --ink: #fbeefc; --soft: #c7b3cf;
-      --card: #362b42; --line: #120c18;
-      --pink: #e58ab0; --mint: #6fcfae; --sky: #78b6e8; --lemon: #e8cf5c; --lilac: #a98ee8;
-      color-scheme: dark;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg: #2a2233; --dot: #3a2f47; --ink: #fbeefc; --soft: #c7b3cf;
-    --card: #362b42; --line: #120c18;
-    --pink: #e58ab0; --mint: #6fcfae; --sky: #78b6e8; --lemon: #e8cf5c; --lilac: #a98ee8;
-    color-scheme: dark;
-  }
 
   * { box-sizing: border-box; }
   [hidden] { display: none !important; }
   body {
-    background-color: var(--bg);
-    background-image: radial-gradient(var(--dot) 2px, transparent 2px);
-    background-size: 22px 22px;
+    background-color: var(--bg);   /* 점무늬는 아래 .bg 가 움직이면서 그려요 */
     color: var(--ink);
     font-family: var(--font-body);
     font-size: 16px;
@@ -554,3 +540,159 @@
   }
   .small-btn.danger { background: var(--pink); color: #3a2840; }
   .small-btn:focus-visible { outline: 3px dashed var(--ink); outline-offset: 2px; }
+
+  /* ---------- 밤하늘 배경 (index.html 의 .bg, 별은 js/bg.js 가 만들어요) ---------- */
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    /* 위는 깊은 밤, 아래로 갈수록 보랏빛 노을 */
+    background:
+      radial-gradient(120% 60% at 50% 115%, #5b3d8a 0%, rgba(91, 61, 138, 0) 60%),
+      linear-gradient(to bottom, #070b24 0%, #12173a 45%, #241e55 100%);
+  }
+  /* 은하수: 대각선으로 흐릿하게 빛나는 띠 */
+  .bg::before {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    background: linear-gradient(115deg, transparent 38%, rgba(190, 170, 255, 0.10) 48%, rgba(255, 220, 245, 0.07) 52%, transparent 62%);
+    animation: milky 60s ease-in-out infinite alternate;
+  }
+  @keyframes milky { to { transform: translateX(6%) rotate(3deg); } }
+
+  /* 달: 투명한 동그라미 안쪽 그림자로 초승달 모양을 만들고, 은은하게 빛나요 */
+  .moon {
+    --m: clamp(56px, 9vw, 96px);
+    position: absolute;
+    top: 7vh;
+    right: 8vw;
+    width: var(--m);
+    height: var(--m);
+    border-radius: 50%;
+    box-shadow: inset calc(var(--m) * -0.26) calc(var(--m) * 0.1) 0 0 #fff3b8;
+    transform: rotate(-20deg);
+    filter: drop-shadow(0 0 14px rgba(255, 238, 170, 0.5));
+    animation: moon-glow 6s ease-in-out infinite alternate;
+  }
+  @keyframes moon-glow { to { filter: drop-shadow(0 0 26px rgba(255, 238, 170, 0.7)); } }
+
+  /* 작은 별: 깜빡깜빡 */
+  .star {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+    animation: twinkle var(--dur) ease-in-out var(--delay) infinite alternate;
+  }
+  /* 큰 반짝이 별 (네 갈래) */
+  .star.big {
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+  .star.big svg { display: block; width: 100%; height: 100%; fill: var(--fill); filter: drop-shadow(0 0 4px var(--fill)); }
+  @keyframes twinkle {
+    from { opacity: 0.25; transform: scale(0.7); }
+    to   { opacity: 1;    transform: scale(1); }
+  }
+
+  /* 별똥별: 가끔 대각선으로 휙 */
+  .shoot {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: 140px;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(to left, #fff, rgba(255, 255, 255, 0));
+    opacity: 0;
+    transform: rotate(-30deg);
+    animation: shoot var(--dur) linear var(--delay) infinite;
+  }
+  @keyframes shoot {
+    0%   { opacity: 0; transform: rotate(-30deg) translateX(0); }
+    1%   { opacity: 1; }
+    6%   { opacity: 0; transform: rotate(-30deg) translateX(-420px); }
+    100% { opacity: 0; transform: rotate(-30deg) translateX(-420px); }
+  }
+
+  /* 메시지함(admin.html)은 움직이지 않는 점무늬 */
+  body:has(> .admin) {
+    background-image: radial-gradient(var(--dot) 2px, transparent 2px);
+    background-size: 22px 22px;
+  }
+
+  /* "동작 줄이기"를 켠 사람에게는 멈춘 밤하늘을 보여 줘요 */
+  @media (prefers-reduced-motion: reduce) {
+    .bg::before, .moon, .star { animation: none; }
+    .shoot { display: none; }
+  }
+
+  /* ---------- 컴퓨터(넓은 화면)에서는 링크 버튼을 가로로 나란히 ---------- */
+  /* 휴대폰과 좁은 화면에서는 위의 세로 목록 그대로예요. */
+  @media (min-width: 960px) {
+    .label { align-self: center; margin-left: 0; }
+    .links {
+      align-self: center;                       /* 가운데 좁은 줄보다 넓게 펼쳐요 */
+      width: min(800px, calc(100vw - 48px));   /* 한 줄에 4개쯤, 남는 건 다음 줄 가운데로 */
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+    }
+    .btn {
+      position: relative;
+      flex: 0 1 184px;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      padding: 22px 14px 18px;
+      text-align: center;
+    }
+    .btn .text { align-items: center; }
+    .btn .badge { position: absolute; top: 10px; right: 10px; }
+  }
+
+  /* ---------- 요즘 듣는 노래 (스포티파이 플레이어) ---------- */
+  .music {
+    border: 3px solid var(--line);
+    border-radius: 20px;
+    box-shadow: 0 5px 0 var(--line);
+    overflow: hidden;
+    background: var(--card);
+    line-height: 0;          /* 플레이어 아래 빈틈 없애기 */
+  }
+  .music iframe { display: block; border: 0; }
+  @media (min-width: 960px) { .music { width: 100%; } }
+
+  /* ---------- 링크 버튼: 밤하늘에 어울리는 어두운 보석 색 ---------- */
+  /* 색을 바꾸고 싶으면 여기 다섯 개만 고치면 돼요. (밝은 글자가 잘 보이게 충분히 어둡게) */
+  :root {
+    --btn-lemon: #7a5c14;   /* 호박색 */
+    --btn-sky:   #2c5788;   /* 사파이어 */
+    --btn-lilac: #57449a;   /* 자수정 */
+    --btn-mint:  #23705c;   /* 에메랄드 */
+    --btn-pink:  #87385f;   /* 루비 */
+  }
+  .btn { color: #f6f2ff; }
+  .btn.lemon { background: var(--btn-lemon); }
+  .btn.sky   { background: var(--btn-sky); }
+  .btn.lilac { background: var(--btn-lilac); }
+  .btn.mint  { background: var(--btn-mint); }
+  .btn.pink  { background: var(--btn-pink); }
+  .btn .icon { background: rgba(255, 255, 255, 0.14); border-color: rgba(255, 255, 255, 0.55); }
+  .btn .icon svg { stroke: #f6f2ff; }
+  .btn .text span { opacity: 0.85; }
+  .btn .badge { border-color: rgba(255, 255, 255, 0.6); background: rgba(0, 0, 0, 0.2); color: #f6f2ff; }
+  :root { --btn-coral: #8c4630; }   /* 산호색 (TikTok) */
+  .btn.coral { background: var(--btn-coral); }
+  :root { --btn-crimson: #8e2a33; }   /* 진홍색 (Valorant) */
+  .btn.crimson { background: var(--btn-crimson); }
