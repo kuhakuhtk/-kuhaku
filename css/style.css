@@ -524,3 +524,33 @@
   .admin .chat-body { height: 50vh; border: 2px solid var(--line); border-radius: 16px; }
   .admin .chat-form { border-top: none; padding: 10px 0 0; background: transparent; }
   .muted { color: var(--soft); font-size: 0.9rem; }
+
+  /* ---------- 보낸 시간 / 차단 / 대화 관리 버튼 ---------- */
+  .msg-time {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.7rem;
+    opacity: 0.65;
+    text-align: right;
+  }
+  .msg.bot .msg-time { text-align: left; }
+  .thread .when { font-size: 0.75rem; opacity: 0.6; }
+  .thread .new.blocked { background: var(--soft); color: #fff; border-color: var(--line); }
+  .thread-head {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+    gap: 8px; margin-bottom: 10px;
+  }
+  .thread-head .muted { margin: 0; }
+  .thread-actions { display: flex; gap: 6px; }
+  .small-btn {
+    padding: 4px 12px;
+    border: 2px solid var(--line);
+    border-radius: 999px;
+    background: var(--card);
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .small-btn.danger { background: var(--pink); color: #3a2840; }
+  .small-btn:focus-visible { outline: 3px dashed var(--ink); outline-offset: 2px; }

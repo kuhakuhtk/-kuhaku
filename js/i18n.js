@@ -36,7 +36,9 @@ const texts = {
     endAsk: "이 기기에서 대화가 사라지고 새로 시작해요. 보낸 메시지는 kuhaku에게 남아요.",
     endYes: "끝내기",
     endNo: "취소",
-    ended: "대화를 끝냈어요. 새로 시작하려면 닉네임을 정해 주세요."
+    ended: "대화를 끝냈어요. 새로 시작하려면 닉네임을 정해 주세요.",
+    slowDown: "조금 천천히 보내 주세요! (3초에 한 번)",
+    blocked: "이 대화는 더 이상 메시지를 보낼 수 없어요."
   },
   en: {
     kana: "空白 · filling in the blanks, one by one",
@@ -73,7 +75,9 @@ const texts = {
     endAsk: "This clears the chat from this device so you can start fresh. Messages you sent stay with kuhaku.",
     endYes: "End",
     endNo: "Cancel",
-    ended: "Chat ended. Pick a nickname to start a new one."
+    ended: "Chat ended. Pick a nickname to start a new one.",
+    slowDown: "Slow down a little! (one message every 3 seconds)",
+    blocked: "You can no longer send messages in this chat."
   },
   vi: {
     kana: "空白 · lấp đầy từng khoảng trống một",
@@ -110,7 +114,9 @@ const texts = {
     endAsk: "Cuộc trò chuyện sẽ bị xóa khỏi thiết bị này để bắt đầu lại. Tin nhắn bạn đã gửi vẫn được lưu ở chỗ kuhaku.",
     endYes: "Kết thúc",
     endNo: "Hủy",
-    ended: "Đã kết thúc. Hãy chọn biệt danh để bắt đầu cuộc trò chuyện mới."
+    ended: "Đã kết thúc. Hãy chọn biệt danh để bắt đầu cuộc trò chuyện mới.",
+    slowDown: "Gửi chậm lại một chút nhé! (3 giây một tin)",
+    blocked: "Bạn không thể gửi tin nhắn trong cuộc trò chuyện này nữa."
   }
 };
 

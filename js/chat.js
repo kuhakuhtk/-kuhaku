@@ -174,7 +174,19 @@ async function connect() {
 }
 
 // ----- 말풍선 그리기 -----
+// 보낸 시간: 오늘이면 "오후 3:05", 다른 날이면 "11/9 오후 3:05" (고른 언어 형식으로)
+function timeLabel(ts) {
+  if (!ts || !ts.toDate) return "";
+  const d = ts.toDate();
+  const lang = window.currentLang();
+  const time = d.toLocaleTimeString(lang, { hour: "numeric", minute: "2-digit" });
+  if (d.toDateString() === new Date().toDateString()) return time;
+  return d.toLocaleDateString(lang, { month: "numeric", day: "numeric" }) + " " + time;
+}
+
+let lastMessages = [];
 function render(messages) {
+  lastMessages = messages;
   list.textContent = "";
   messages.forEach(function (m) {
     const p = document.createElement("p");
@@ -182,38 +194,70 @@ function render(messages) {
     p.className = "msg " + (m.from === "owner" ? "bot" : "me");
     if (!m.createdAt) p.classList.add("pending"); // 아직 서버에 저장되는 중
     p.textContent = m.text;                        // textContent: 남이 쓴 글을 안전하게 표시
+    const when = timeLabel(m.createdAt);
+    if (when) {
+      const t = document.createElement("time");
+      t.className = "msg-time";
+      t.dateTime = m.createdAt.toDate().toISOString();
+      t.textContent = when;
+      p.appendChild(t);
+    }
     list.appendChild(p);
   });
   scrollDown();
 }
+// 언어를 바꾸면 시간 표시 형식도 다시 그려요.
+document.addEventListener("langchange", function () { if (lastMessages.length) render(lastMessages); });
 
 // ----- 메시지 보내기 -----
+// 스팸 방지: 3초에 한 번만 보낼 수 있어요. (보안 규칙도 똑같이 검사해요)
+const COOLDOWN_MS = 3000;
+let lastSentAt = 0;
+
 form.addEventListener("submit", async function (e) {
   e.preventDefault();
   if (!fb) return;
   const text = input.value.trim().slice(0, 500);
   if (!text) return;
+  if (Date.now() - lastSentAt < COOLDOWN_MS) {
+    setNote("slowDown");
+    return;
+  }
   input.value = "";
   const { db, uid, fs } = fb;
   try {
-    // 1) 대화방 정보 갱신 (주인 목록에 "새 메시지"로 보이게)
-    await fs.setDoc(fs.doc(db, "chats", uid), {
+    // 대화방 정보와 메시지를 한 번에(batch) 저장해요. 둘 중 하나만 저장되는 일이 없어요.
+    const batch = fs.writeBatch(db);
+    batch.set(fs.doc(db, "chats", uid), {
       nickname: nickname,
       updatedAt: fs.serverTimestamp(),
+      visitorAt: fs.serverTimestamp(),   // 3초 간격 검사에 쓰는 시간
       lastText: text,
       lastFrom: "visitor",
       unreadByOwner: true,
       lang: window.currentLang()
     }, { merge: true });
-    // 2) 메시지 저장
-    await fs.addDoc(fs.collection(db, "chats", uid, "messages"), {
+    batch.set(fs.doc(fs.collection(db, "chats", uid, "messages")), {
       from: "visitor",
       text: text,
       createdAt: fs.serverTimestamp()
     });
+    lastSentAt = Date.now();
+    await batch.commit();
+    setNote("chatReady");
   } catch (err) {
     console.error(err);
     input.value = text;
-    setNote("chatSendFail");
+    lastSentAt = 0;
+    setNote(await blockedNow() ? "blocked" : "chatSendFail");
   }
 });
+
+// 보내기에 실패했을 때, 차단돼서 그런 건지 확인해요.
+async function blockedNow() {
+  if (!fb) return false;
+  try {
+    const b = await fb.fs.getDoc(fb.fs.doc(fb.db, "blocked", fb.uid));
+    return b.exists();
+  } catch (e) { return false; }
+}
