@@ -24,7 +24,10 @@ async function start() {
   const db = fs.getFirestore(app);
 
   $("loginBtn").addEventListener("click", function () {
-    A.signInWithPopup(auth, new A.GoogleAuthProvider()).catch(function (err) {
+    // 매번 계정 선택 화면이 나오게 해요 (휴대폰이 다른 계정으로 자동 로그인하는 것 방지)
+    const provider = new A.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: "select_account" });
+    A.signInWithPopup(auth, provider).catch(function (err) {
       $("gateText").textContent = "로그인 실패: " + err.message;
     });
   });
