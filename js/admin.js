@@ -34,9 +34,11 @@ async function start() {
   $("logoutBtn").addEventListener("click", function () { A.signOut(auth); });
 
   let stopThreads = null;
+  let stopStats = null;
 
   A.onAuthStateChanged(auth, function (user) {
     if (stopThreads) { stopThreads(); stopThreads = null; }
+    if (stopStats) { stopStats(); stopStats = null; }
     closeThread();
     const isGoogle = user && !user.isAnonymous;
 
@@ -66,6 +68,7 @@ async function start() {
     $("gate").hidden = true;
     $("inbox").hidden = false;
     stopThreads = watchThreads(db, fs);
+    stopStats = watchSurveys(db, fs);
   });
 }
 
@@ -305,4 +308,56 @@ function closeThread() {
   $("replyInput").disabled = true;
   $("replyBtn").disabled = true;
   $("threadActions").hidden = true;
+}
+
+// ----- 설문 결과 (방문자가 처음 들어올 때 고른 답을 세어서 보여 줘요) -----
+// 왼쪽 이름은 index.html 의 data-answer, firestore.rules 의 보기와 같아야 해요.
+const SURVEY_LABELS = {
+  gender: { title: "성별", items: { male: "남자", female: "여자", other: "기타", secret: "비밀" } },
+  age: { title: "나이", items: { "u13": "13세 이하", "14-16": "14~16세", "17-19": "17~19세", "20-24": "20~24세", "25+": "25세 이상", secret: "비밀" } },
+  source: { title: "어디서 알게 됐나요", items: { discord: "Discord", instagram: "Instagram", tiktok: "TikTok", facebook: "Facebook", friend: "친구", other: "다른 곳" } }
+};
+
+function watchSurveys(db, fs) {
+  const box = $("stats");
+  box.hidden = false;
+  const stop = fs.onSnapshot(fs.query(fs.collection(db, "surveys"), fs.limit(2000)), function (snap) {
+    const total = snap.size;
+    $("statsCount").textContent = "설문 결과 · 답한 사람 " + total + "명";
+    const grid = $("statsGrid");
+    grid.textContent = "";
+    Object.keys(SURVEY_LABELS).forEach(function (q) {
+      const def = SURVEY_LABELS[q];
+      const counts = {};
+      snap.docs.forEach(function (d) { const v = d.data()[q]; counts[v] = (counts[v] || 0) + 1; });
+
+      const col = document.createElement("div");
+      col.className = "stat";
+      const h = document.createElement("h2");
+      h.textContent = def.title;
+      col.appendChild(h);
+      Object.keys(def.items).forEach(function (key) {
+        const n = counts[key] || 0;
+        const pct = total ? Math.round((n / total) * 100) : 0;
+        const row = document.createElement("div");
+        row.className = "stat-row";
+        const name = document.createElement("span");
+        name.textContent = def.items[key];
+        const bar = document.createElement("span");
+        bar.className = "stat-bar";
+        const fill = document.createElement("i");
+        fill.style.width = pct + "%";
+        bar.appendChild(fill);
+        const num = document.createElement("span");
+        num.className = "stat-num";
+        num.textContent = n + "명 (" + pct + "%)";
+        row.append(name, bar, num);
+        col.appendChild(row);
+      });
+      grid.appendChild(col);
+    });
+  }, function (err) {
+    $("statsCount").textContent = "설문 결과를 불러오지 못했어요: " + err.message + " (firestore.rules 를 게시했는지 확인해 주세요)";
+  });
+  return function () { stop(); box.hidden = true; };
 }

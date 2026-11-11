@@ -12,6 +12,7 @@ rules_version = '2';
 //   (메시지와 대화방 정보를 한 번에(batch) 써야 하고, 대화방의 visitorAt 시간으로 간격을 검사해요.)
 // - 차단: blocked/방문자ID 문서가 있으면 그 방문자는 더 이상 쓸 수 없어요.
 // - 방문자는 "주인이 보낸 것처럼"(lastFrom: 'owner') 꾸밀 수 없어요.
+// - 설문 답(surveys)은 방문자가 자기 것만 쓸 수 있고, 주인만 읽을 수 있어요.
 
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -75,6 +76,19 @@ service cloud.firestore {
         allow update: if false;
         allow delete: if isOwner();
       }
+    }
+
+    // 설문 답: 방문자는 자기 답 하나만 쓸 수 있고(정해진 보기 중에서만), 읽는 건 주인만 할 수 있어요.
+    match /surveys/{uid} {
+      allow read, delete: if isOwner();
+      allow create, update: if isSelf(uid)
+        && request.resource.data.keys().hasOnly(['gender', 'age', 'source', 'lang', 'createdAt'])
+        && request.resource.data.keys().hasAll(['gender', 'age', 'source', 'lang', 'createdAt'])
+        && request.resource.data.gender in ['male', 'female', 'other', 'secret']
+        && request.resource.data.age in ['u13', '14-16', '17-19', '20-24', '25+', 'secret']
+        && request.resource.data.source in ['discord', 'instagram', 'tiktok', 'facebook', 'friend', 'other']
+        && request.resource.data.lang in ['ko', 'en', 'vi']
+        && request.resource.data.createdAt == request.time;
     }
 
     // 차단 목록: 주인만 쓰고, 방문자는 자기가 차단됐는지만 볼 수 있어요.

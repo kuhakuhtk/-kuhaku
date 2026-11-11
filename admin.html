@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&family=Baloo+2:wght@600&family=Nunito:wght@500;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=20261110">
+<link rel="stylesheet" href="css/style.css?v=20261112">
 </head>
 <body>
 <main class="admin">
@@ -47,9 +47,15 @@
     </div>
   </section>
 
+  <!-- 설문 결과 (방문자가 처음 들어올 때 고른 답) -->
+  <section class="panel" id="stats" hidden>
+    <p class="muted" id="statsCount">설문 결과</p>
+    <div class="stats-grid" id="statsGrid"></div>
+  </section>
+
   <button class="pill-btn ghost" id="logoutBtn" type="button" hidden>로그아웃</button>
 </main>
 
-<script type="module" src="js/admin.js?v=20261110"></script>
+<script type="module" src="js/admin.js?v=20261112"></script>
 </body>
 </html>

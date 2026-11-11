@@ -1,0 +1,478 @@
+/* ===== 고급스러운 새 디자인 (index.html 전용) =====
+   style.css 다음에 불러와서, 처음 화면과 답 화면, 화면 전환, 유리 느낌 카드, 반짝이 효과를 입혀요.
+   색을 바꾸고 싶으면 바로 아래 :root 의 값만 고치면 돼요. */
+:root {
+  --text: #fdfbff;                          /* 글자 */
+  --muted: rgba(243, 238, 255, 0.76);       /* 흐린 글자 */
+  --glass: rgba(255, 255, 255, 0.10);       /* 유리 카드 바탕 */
+  --glass-strong: rgba(255, 255, 255, 0.18);
+  --edge: rgba(255, 255, 255, 0.30);        /* 유리 카드 테두리 */
+  --gold: #ffe6a8;
+  --deep: #1d1650;                          /* 밝은 버튼 위의 진한 글자 */
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --font-lux: "Cormorant Garamond", "Gowun Batang", "Times New Roman", serif;
+}
+
+body {
+  color: var(--text);
+  padding-block: 22px 120px;
+  overflow-x: hidden;
+}
+.wrap { max-width: 760px; gap: 28px; }
+:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* ---------- 하늘 배경: 전보다 밝은 새벽빛 ---------- */
+.bg {
+  background:
+    radial-gradient(120% 70% at 50% 118%, rgba(255, 170, 205, 0.75) 0%, rgba(255, 170, 205, 0) 62%),
+    linear-gradient(to bottom, #2a2f80 0%, #4541a8 38%, #6f55bd 68%, #9a66bf 100%);
+}
+/* 오로라: 색 빛 덩어리가 아주 천천히 떠다녀요 */
+.aurora {
+  position: absolute;
+  width: 70vmax;
+  height: 70vmax;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  animation: aurora-drift 26s ease-in-out infinite alternate;
+}
+.aurora.a1 { top: -34vmax; left: -22vmax; background: radial-gradient(circle, rgba(110, 160, 255, 0.55), transparent 62%); }
+.aurora.a2 { bottom: -38vmax; right: -24vmax; background: radial-gradient(circle, rgba(255, 140, 200, 0.5), transparent 62%); animation-duration: 32s; animation-delay: -8s; }
+.aurora.a3 { top: 18%; left: 38%; width: 46vmax; height: 46vmax; background: radial-gradient(circle, rgba(120, 240, 215, 0.26), transparent 62%); animation-duration: 38s; animation-delay: -15s; }
+@keyframes aurora-drift {
+  from { transform: translate3d(-4vmax, -2vmax, 0) scale(1); }
+  to   { transform: translate3d(6vmax, 5vmax, 0) scale(1.18); }
+}
+/* 깊이 층: 마우스를 움직이면 층마다 다른 만큼 따라와요 (--px, --py 는 js/flow.js 가 넣어요) */
+.layer {
+  position: absolute;
+  inset: 0;
+  transform: translate3d(calc(var(--px, 0) * var(--depth) * -1px), calc(var(--py, 0) * var(--depth) * -1px), 0);
+  transition: transform 0.6s var(--ease);
+}
+
+/* ---------- 언어 선택 ---------- */
+.lang {
+  background: var(--glass);
+  border: 1px solid var(--edge);
+  box-shadow: 0 8px 24px rgba(20, 12, 60, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  backdrop-filter: blur(14px) saturate(150%);
+  animation: rise 0.8s var(--ease) backwards;
+}
+.lang button { color: var(--text); transition: background 0.3s, color 0.3s; }
+.lang button:hover { background: rgba(255, 255, 255, 0.14); }
+.lang button[aria-pressed="true"] { background: linear-gradient(135deg, #fff, #ffe3f1); color: var(--deep); }
+.lang button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* ---------- 화면과 화면 전환 ---------- */
+.screen { display: flex; flex-direction: column; gap: 22px; }
+/* 나타날 때: data-r 이 붙은 것들이 번호(--i) 순서대로 떠올라요 */
+.screen.is-in [data-r] {
+  animation: rise 0.8s var(--ease) backwards;
+  animation-delay: calc(var(--i, 0) * 75ms + 60ms);
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(30px) scale(0.97); filter: blur(8px); }
+}
+/* 처음으로 돌아갈 때는 반대 방향(위에서 아래로) */
+.stage[data-dir="back"] .screen.is-in [data-r] { animation-name: rise-back; }
+@keyframes rise-back {
+  from { opacity: 0; transform: translateY(-30px) scale(0.97); filter: blur(8px); }
+}
+/* 사라질 때 */
+.screen.is-out { animation: screen-out 0.3s ease-in forwards; pointer-events: none; }
+@keyframes screen-out {
+  to { opacity: 0; transform: translateY(-22px) scale(0.97); filter: blur(10px); }
+}
+.stage[data-dir="back"] .screen.is-out { animation-name: screen-out-back; }
+@keyframes screen-out-back {
+  to { opacity: 0; transform: translateY(22px) scale(0.97); filter: blur(10px); }
+}
+/* 누른 자리에서 퍼지는 빛 */
+.veil {
+  position: fixed;
+  z-index: 5;
+  width: 44vmax;
+  height: 44vmax;
+  margin: -22vmax 0 0 -22vmax;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 240, 250, 0.55) 0%, rgba(200, 180, 255, 0.28) 38%, transparent 68%);
+  opacity: 0;
+  transform: scale(0);
+  pointer-events: none;
+}
+.veil.go { animation: veil 0.9s var(--ease); }
+@keyframes veil {
+  0%   { opacity: 0.95; transform: scale(0); }
+  100% { opacity: 0;    transform: scale(3.4); }
+}
+
+/* ---------- 처음 화면: 이름 ---------- */
+.hero { display: flex; flex-direction: column; align-items: center; gap: 10px; padding-top: 14px; text-align: center; }
+.title {
+  margin: 0;
+  font-family: var(--font-lux);
+  font-weight: 600;
+  font-size: clamp(3.6rem, 15vw, 6.4rem);
+  line-height: 1;
+  letter-spacing: 0.05em;
+}
+/* 글자마다: 아래에서 떠오르고(letter-in), 빛이 계속 흘러요(shimmer) */
+.title span {
+  display: inline-block;
+  padding: 0 0.01em 0.08em;
+  background: linear-gradient(100deg, #ffffff 0%, #ffe6a8 22%, #ffc2e2 44%, #cfd8ff 66%, #ffffff 88%);
+  background-size: 320% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 18px rgba(255, 225, 245, 0.45));
+  animation: letter-in 1s var(--ease) backwards, shimmer 8s linear infinite;
+  animation-delay: calc(var(--i) * 90ms + 150ms), calc(var(--i) * -0.6s);
+}
+@keyframes letter-in {
+  from { opacity: 0; transform: translateY(46px) rotate(9deg) scale(0.8); filter: blur(10px); }
+}
+@keyframes shimmer { to { background-position: -320% 0; } }
+.kana { margin: 0; font-size: 0.92rem; letter-spacing: 0.1em; color: var(--muted); }
+
+/* 취미 */
+.hobbies { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; list-style: none; margin: -6px 0 0; padding: 0; }
+.hobbies li {
+  padding: 4px 14px;
+  font-size: 0.88rem;
+  color: var(--text);
+  background: var(--glass);
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  animation: bobble 5s ease-in-out infinite;
+  animation-delay: calc(var(--n, 0) * -1.2s);
+}
+.hobbies li:nth-child(2) { --n: 1; }
+.hobbies li:nth-child(3) { --n: 2; }
+.hobbies li:nth-child(4) { --n: 3; }
+@keyframes bobble { 50% { transform: translateY(-5px); } }
+
+/* 질문 */
+.ask-box { text-align: center; margin-top: 10px; }
+.ask {
+  margin: 0;
+  font-family: var(--font-lux);
+  font-weight: 700;
+  font-size: clamp(1.7rem, 5.4vw, 2.5rem);
+  line-height: 1.25;
+  text-wrap: balance;
+  text-shadow: 0 2px 24px rgba(30, 16, 90, 0.45);
+  outline: none;
+}
+.ask-sub { margin: 6px 0 0; color: var(--muted); font-size: 0.95rem; }
+
+/* ---------- 유리 카드 버튼 (고르기 버튼 .choice, 링크 버튼 .dest) ---------- */
+.choices, .dests { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.choice, .dest {
+  --tint: #b48cff;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  color: var(--text);
+  text-decoration: none;
+  background: var(--glass);
+  border: 1px solid var(--edge);
+  border-radius: 22px;
+  box-shadow: 0 10px 30px rgba(20, 12, 60, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
+  /* 기울기(--rx, --ry)는 js/flow.js 가 마우스 위치에 맞춰 넣어요 */
+  transform: perspective(700px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift, 0px));
+  transition: transform 0.35s var(--ease), background 0.3s, box-shadow 0.35s, border-color 0.3s;
+}
+/* 마우스 자리에 비치는 색 빛 */
+.choice::before, .dest::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--tint) 55%, transparent), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.35s;
+}
+/* 스윽 지나가는 반사광 */
+.choice::after, .dest::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.32) 50%, transparent 65%);
+  transform: translateX(-130%);
+  transition: transform 0.9s var(--ease);
+  pointer-events: none;
+}
+.choice:hover, .dest:hover, .choice:focus-visible, .dest:focus-visible {
+  --lift: -5px;
+  background: var(--glass-strong);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 20px 46px rgba(20, 12, 60, 0.42), 0 0 36px color-mix(in srgb, var(--tint) 55%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+.choice:hover::before, .dest:hover::before { opacity: 1; }
+.choice:hover::after, .dest:hover::after, .choice:focus-visible::after, .dest:focus-visible::after { transform: translateX(130%); }
+.choice:active, .dest:active { --lift: 1px; transition-duration: 0.1s; }
+
+/* 색 아이콘 */
+.ico {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 15px;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--tint) 88%, #ffffff), color-mix(in srgb, var(--tint) 62%, #1d1650));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 6px 18px color-mix(in srgb, var(--tint) 50%, transparent);
+  transition: transform 0.45s var(--ease);
+}
+.ico svg, .go, .back svg, .cta svg { fill: none; stroke: currentColor; stroke-width: 2.1; stroke-linecap: round; stroke-linejoin: round; }
+.ico svg { width: 24px; height: 24px; stroke: #fff; }
+.choice:hover .ico, .dest:hover .ico { transform: scale(1.1) rotate(-6deg); }
+.choice b, .dest b { flex: 1; min-width: 0; font-weight: 400; font-size: 1.04rem; line-height: 1.35; }
+.dest b { font-family: "Nunito", "Gowun Dodum", sans-serif; font-weight: 700; font-size: 1.1rem; letter-spacing: 0.01em; }
+.go { flex: none; width: 20px; height: 20px; opacity: 0.6; transition: transform 0.35s var(--ease), opacity 0.3s; }
+.choice:hover .go { transform: translateX(5px); opacity: 1; }
+.dest:hover .go { transform: translate(3px, -3px); opacity: 1; }
+
+/* ---------- 답 화면: 대화처럼 ---------- */
+.back {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px 7px 12px;
+  color: var(--text);
+  font-size: 0.92rem;
+  text-decoration: none;
+  background: var(--glass);
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  transition: background 0.3s, transform 0.3s var(--ease);
+}
+.back svg { width: 18px; height: 18px; transition: transform 0.3s var(--ease); }
+.back:hover { background: var(--glass-strong); }
+.back:hover svg { transform: translateX(-4px); }
+/* 방문자가 고른 말 (오른쪽 말풍선) */
+.you {
+  align-self: flex-end;
+  max-width: 85%;
+  margin: 6px 0 0;
+  padding: 10px 18px;
+  color: var(--deep);
+  background: linear-gradient(135deg, #ffe3f1, #d9ccff);
+  border-radius: 22px 22px 6px 22px;
+  box-shadow: 0 10px 26px rgba(30, 14, 80, 0.3);
+}
+/* kuhaku 의 답 (왼쪽 말풍선) */
+.reply { align-self: flex-start; max-width: 92%; display: flex; flex-direction: column; gap: 6px; }
+.reply .who { font-family: var(--font-lux); font-weight: 700; font-size: 1.1rem; letter-spacing: 0.08em; color: var(--gold); padding-left: 6px; }
+.answer {
+  margin: 0;
+  padding: 16px 20px;
+  font-size: 1.14rem;
+  line-height: 1.6;
+  background: var(--glass);
+  border: 1px solid var(--edge);
+  border-radius: 6px 22px 22px 22px;
+  box-shadow: 0 10px 30px rgba(20, 12, 60, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
+  outline: none;
+}
+.dests { margin-top: 6px; }
+/* 링크가 하나뿐이면 한 줄을 다 써요 */
+.dests .dest:only-child { grid-column: 1 / -1; }
+
+/* 스포티파이 플레이어 */
+.player {
+  padding: 8px;
+  line-height: 0;
+  background: var(--glass);
+  border: 1px solid var(--edge);
+  border-radius: 22px;
+  box-shadow: 0 10px 30px rgba(20, 12, 60, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+.player iframe { display: block; border: 0; border-radius: 14px; }
+
+/* "메시지 보내기" 큰 버튼 */
+.cta {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  padding: 14px 26px;
+  color: var(--deep);
+  font-family: var(--font-body);
+  font-size: 1.08rem;
+  background: linear-gradient(135deg, #fff3c9, #ffcfe6 55%, #d9ccff);
+  background-size: 200% 100%;
+  border: 0;
+  border-radius: 999px;
+  box-shadow: 0 12px 34px rgba(255, 190, 225, 0.45);
+  cursor: pointer;
+  transition: transform 0.3s var(--ease), box-shadow 0.3s, background-position 0.6s;
+}
+.cta svg { width: 22px; height: 22px; }
+.cta:hover { transform: translateY(-3px) scale(1.03); background-position: 100% 0; box-shadow: 0 18px 44px rgba(255, 190, 225, 0.6); }
+.cta:active { transform: translateY(1px) scale(0.99); }
+
+footer { color: var(--muted); margin-top: 18px; text-shadow: 0 1px 10px rgba(30, 16, 90, 0.5); }
+
+/* ---------- 반짝이 효과 (js/flow.js 가 만들어요) ---------- */
+.fx { position: fixed; inset: 0; z-index: 40; overflow: hidden; pointer-events: none; }
+.spark {
+  position: absolute;
+  width: var(--s, 5px);
+  height: var(--s, 5px);
+  margin: calc(var(--s, 5px) / -2) 0 0 calc(var(--s, 5px) / -2);
+  background: var(--c, #fff);
+  /* 네 갈래 별 모양 */
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  filter: drop-shadow(0 0 4px var(--c, #fff));
+}
+.spark.trail { animation: spark-trail 0.9s ease-out forwards; }
+.spark.burst { animation: spark-burst 0.7s var(--ease) forwards; }
+@keyframes spark-trail {
+  from { opacity: 1; transform: translate(0, 0) scale(2.2) rotate(0deg); }
+  to   { opacity: 0; transform: translate(var(--dx, 0), 26px) scale(0.4) rotate(120deg); }
+}
+@keyframes spark-burst {
+  from { opacity: 1; transform: translate(0, 0) scale(2.4) rotate(0deg); }
+  to   { opacity: 0; transform: translate(var(--dx, 0), var(--dy, 0)) scale(0.3) rotate(160deg); }
+}
+
+/* ---------- 알림과 대화창도 같은 느낌으로 ---------- */
+.toast {
+  background: rgba(40, 32, 100, 0.8);
+  color: var(--text);
+  border: 1px solid var(--edge);
+  box-shadow: 0 12px 34px rgba(16, 8, 50, 0.45);
+  font-family: var(--font-body);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+.mini { display: none; }   /* 작은 얼굴은 숨겨요 */
+.chat-fab {
+  padding: 12px 22px;
+  color: var(--deep);
+  font-family: var(--font-body);
+  background: linear-gradient(135deg, #fff3c9, #ffcfe6 55%, #d9ccff);
+  border: 0;
+  box-shadow: 0 12px 32px rgba(30, 14, 80, 0.45);
+  animation: fab-glow 3.2s ease-in-out infinite;
+  transition: transform 0.3s var(--ease);
+}
+.chat-fab::before { content: "✦"; font-size: 0.95rem; }
+.chat-fab:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 16px 38px rgba(30, 14, 80, 0.5); }
+.chat-fab:active { transform: translateY(1px); box-shadow: 0 8px 20px rgba(30, 14, 80, 0.45); }
+.chat-fab:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+@keyframes fab-glow {
+  0%, 100% { box-shadow: 0 12px 32px rgba(30, 14, 80, 0.45), 0 0 0 0 rgba(255, 215, 240, 0.55); }
+  50%      { box-shadow: 0 12px 32px rgba(30, 14, 80, 0.45), 0 0 0 12px rgba(255, 215, 240, 0); }
+}
+.chat {
+  background: rgba(34, 28, 92, 0.86);
+  border: 1px solid var(--edge);
+  box-shadow: 0 26px 64px rgba(12, 6, 44, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(20px) saturate(150%);
+  transform-origin: 100% 100%;
+  animation: chat-in 0.45s var(--ease);
+}
+@keyframes chat-in {
+  from { opacity: 0; transform: translateY(18px) scale(0.92); }
+}
+.chat-head {
+  padding-left: 18px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04));
+  color: var(--text);
+  border-bottom: 1px solid var(--edge);
+}
+.chat-head strong { font-family: var(--font-lux); font-weight: 700; font-size: 1.3rem; letter-spacing: 0.06em; color: var(--gold); }
+.chat-close { border: 1px solid var(--edge); background: rgba(255, 255, 255, 0.1); color: var(--text); transition: background 0.3s, transform 0.3s var(--ease); }
+.chat-close:hover { background: rgba(255, 255, 255, 0.22); transform: rotate(90deg); }
+.chat-close:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.chat-body { background: transparent; }
+.msg { border: 1px solid var(--edge); animation: rise 0.5s var(--ease) backwards; }
+.msg.bot { background: rgba(255, 255, 255, 0.1); color: var(--text); }
+.msg.me { background: linear-gradient(135deg, #ffe3f1, #d9ccff); color: var(--deep); border-color: transparent; }
+.chat-note { color: var(--muted); }
+.link-btn { color: var(--text); }
+.chat-warn { background: rgba(255, 230, 168, 0.13); color: var(--gold); border: 1px dashed rgba(255, 230, 168, 0.55); }
+.chat-form { border-top: 1px solid var(--edge); background: rgba(255, 255, 255, 0.05); }
+.chat-form input { border: 1px solid var(--edge); background: rgba(255, 255, 255, 0.08); color: var(--text); }
+.chat-form input::placeholder { color: var(--muted); }
+.chat-form input:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
+.chat-form button { border: 0; background: linear-gradient(135deg, #ffe3f1, #d9ccff); color: var(--deep); font-family: var(--font-body); }
+.chat-form button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* ---------- 휴대폰: 버튼을 한 줄에 하나씩 ---------- */
+@media (max-width: 620px) {
+  .wrap { gap: 22px; }
+  .choices, .dests { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .choice, .dest { padding: 14px 16px; }
+  .answer { font-size: 1.06rem; }
+}
+
+/* ---------- "동작 줄이기"를 켠 사람에게는 움직임 없이 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .aurora, .lang, .title span, .hobbies li, .screen.is-in [data-r], .screen.is-out,
+  .chat, .chat-fab, .msg, .veil.go { animation: none; }
+  .layer, .choice, .dest, .ico, .go, .cta, .back, .back svg, .chat-close { transition: none; }
+  .choice::after, .dest::after { display: none; }
+}
+
+/* 한국어는 낱말 중간에서 줄이 바뀌지 않게 */
+.choice b, .answer, .you, .ask, .ask-sub { word-break: keep-all; overflow-wrap: anywhere; }
+/* 휴대폰에서는 달을 작게, 언어 버튼과 겹치지 않는 자리로 */
+@media (max-width: 620px) {
+  .moon { --m: 42px; top: 92px; right: 14px; }
+}
+
+/* ---------- 설문 화면 (처음 온 사람에게 질문이 하나씩 나와요) ---------- */
+.in-survey .chat-fab { display: none; }          /* 설문 중에는 대화하기 버튼을 숨겨요 */
+.survey { padding-top: 26px; }
+button.choice, button.back { font: inherit; text-align: left; cursor: pointer; }
+button.choice { width: 100%; }
+.survey .back { align-self: center; }
+.eyebrow { margin: 0 0 10px; font-size: 0.9rem; letter-spacing: 0.14em; color: var(--gold); }
+/* 진행 막대: 3칸 중 지금까지 온 칸이 빛나요 */
+.steps { align-self: center; display: flex; gap: 8px; }
+.steps i {
+  width: 46px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  overflow: hidden;
+}
+.steps i.on { background: linear-gradient(90deg, #fff3c9, #ffcfe6, #d9ccff); box-shadow: 0 0 14px rgba(255, 215, 240, 0.7); }
+.screen.is-in .steps i.on:last-of-type, .screen.is-in .steps i.on:has(+ i:not(.on)) { animation: step-fill 0.8s var(--ease) 0.25s backwards; }
+@keyframes step-fill { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+/* 나이 버튼의 숫자 아이콘 */
+.ico:not(:has(svg)) { color: #fff; font-family: "Nunito", sans-serif; font-weight: 700; font-size: 0.82rem; letter-spacing: 0.02em; }
+/* 고른 답: 잠깐 환하게 빛나요 */
+.screen.is-in .choice.picked {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: #fff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.55), 0 0 44px color-mix(in srgb, var(--tint) 75%, transparent);
+  animation: picked 0.3s var(--ease);
+}
+@keyframes picked { 50% { transform: scale(1.04); } }
+@media (prefers-reduced-motion: reduce) {
+  .steps i.on, .choice.picked { animation: none !important; }
+}

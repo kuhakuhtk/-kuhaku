@@ -696,3 +696,11 @@
   .btn.coral { background: var(--btn-coral); }
   :root { --btn-crimson: #8e2a33; }   /* 진홍색 (Valorant) */
   .btn.crimson { background: var(--btn-crimson); }
+
+  /* ---------- 메시지함: 설문 결과 ---------- */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px 28px; }
+  .stat h2 { margin: 0 0 8px; font-family: var(--font-display); font-weight: 400; font-size: 1.05rem; }
+  .stat-row { display: grid; grid-template-columns: 6.5em 1fr auto; align-items: center; gap: 8px; font-size: 0.88rem; padding: 3px 0; }
+  .stat-bar { height: 10px; border-radius: 999px; background: var(--bg); border: 2px solid var(--line); overflow: hidden; }
+  .stat-bar i { display: block; height: 100%; background: var(--lilac); border-radius: 999px; }
+  .stat-num { color: var(--soft); font-variant-numeric: tabular-nums; }
