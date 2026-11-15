@@ -11,7 +11,7 @@
   let px = 0, py = 0, tx = 0, ty = 0, last = 0, nextShot = 2200, raf = 0;
 
   function resize() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = 1;   // 고해상도로 그리면 칠할 픽셀이 4배라 랙이 생겨요. 별은 작은 점이라 1배로도 충분해요
     w = cv.clientWidth; h = cv.clientHeight;
     cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -67,6 +67,7 @@
   }
 
   function frame(t) {
+    if (t - last < 33) { raf = requestAnimationFrame(frame); return; }   // 초당 30번만 그려요 (60번 → 절반)
     const dt = Math.min(t - (last || t), 60); last = t;
     px += (tx - px) * 0.04; py += (ty - py) * 0.04;
     nextShot -= dt;
