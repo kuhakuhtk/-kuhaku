@@ -2,7 +2,7 @@
 // 글자를 바꾸고 싶으면 여기만 고치면 돼요. 세 언어 모두 같은 이름표(key)를 써요.
 const texts = {
   ko: {
-    kana: "空白 · 빈칸에 하나씩 채워 가는 중",
+    kana: "空白 · still struggling even when life is good",
     // 묻고 답하는 화면
     // 설문
     svHello: "들어가기 전에 3가지만 물어볼게요",
@@ -62,7 +62,7 @@ const texts = {
     blocked: "이 대화는 더 이상 메시지를 보낼 수 없어요."
   },
   en: {
-    kana: "空白 · filling in the blanks, one by one",
+    kana: "空白 · still struggling even when life is good",
     // 묻고 답하는 화면
     // 설문
     svHello: "Just 3 quick questions before you come in",
@@ -122,7 +122,7 @@ const texts = {
     blocked: "You can no longer send messages in this chat."
   },
   vi: {
-    kana: "空白 · lấp đầy từng khoảng trống một",
+    kana: "空白 · still struggling even when life is good",
     // 묻고 답하는 화면
     // 설문
     svHello: "Trước khi vào, cho mình hỏi nhanh 3 câu nhé",
