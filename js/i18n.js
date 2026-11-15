@@ -2,9 +2,12 @@
 // 글자를 바꾸고 싶으면 여기만 고치면 돼요. 세 언어 모두 같은 이름표(key)를 써요.
 const texts = {
   ko: {
+    welcome: "kuhaku의 공간에 오신 걸 환영해요.",
+    next: "다음",
+    introTitle: "이 사이트에서는 kuhaku와 바로 대화할 수 있어요",
+    introSub: "오른쪽 아래 ‘대화하기’를 누르고 메시지를 남겨 주세요.",
+    demoMe: "안녕하세요! 같이 게임해요",
     kana: "空白 · still struggling even when life is good",
-    // 묻고 답하는 화면
-    // 설문
     svHello: "들어가기 전에 3가지만 물어볼게요",
     svNote: "익명으로 저장돼요. 이름은 묻지 않아요.",
     svPrev: "이전 질문",
@@ -62,9 +65,12 @@ const texts = {
     blocked: "이 대화는 더 이상 메시지를 보낼 수 없어요."
   },
   en: {
+    welcome: "Welcome to kuhaku's space.",
+    next: "Next",
+    introTitle: "You can chat with kuhaku right here",
+    introSub: "Tap “Chat” at the bottom right and leave a message.",
+    demoMe: "Hi! Let's play together",
     kana: "空白 · still struggling even when life is good",
-    // 묻고 답하는 화면
-    // 설문
     svHello: "Just 3 quick questions before you come in",
     svNote: "Saved anonymously. I never ask for your name.",
     svPrev: "Previous question",
@@ -122,9 +128,12 @@ const texts = {
     blocked: "You can no longer send messages in this chat."
   },
   vi: {
+    welcome: "Chào mừng bạn đến với không gian của kuhaku.",
+    next: "Tiếp theo",
+    introTitle: "Bạn có thể trò chuyện với kuhaku ngay tại đây",
+    introSub: "Nhấn “Nhắn tin” ở góc dưới bên phải và để lại tin nhắn nhé.",
+    demoMe: "Chào bạn! Chơi game cùng nhé",
     kana: "空白 · still struggling even when life is good",
-    // 묻고 답하는 화면
-    // 설문
     svHello: "Trước khi vào, cho mình hỏi nhanh 3 câu nhé",
     svNote: "Lưu ẩn danh. Mình không hỏi tên bạn.",
     svPrev: "Câu trước",
